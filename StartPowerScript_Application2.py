@@ -9,7 +9,8 @@ from StartPowerGUI import powerThread
 
         
 def main():
-    """ Calculate and print power for Application 1 (FaDu) for N=3 to N=20."""
+    """ Calculate and print power for Application 2 (six lung xenografts of 
+        different radiosensitivity) for N=2 to N=40, step size 2."""
    
     # read input file for application 1
     df = pd.read_excel("Input_Application2.xlsx")            

@@ -20,7 +20,7 @@ def main():
     k = 10000
     alpha = 0.05
     seed = 12345
-    Nar = np.arange(5, 21, 1)
+    Nar = np.arange(3, 21, 1)
         
     print("Please be patient ...")
     print("---------------------")

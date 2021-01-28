@@ -17,7 +17,7 @@ from PyQt5 import QtWidgets, QtCore
 
 class GUI(QtWidgets.QWidget, Ui_Dialog):
     """ 
-    Class containing the GUI and the power calculation method     
+    Class containing the GUI and calling the power calculation method     
     """       
     def __init__(self, parent = None):
         """ 
@@ -131,7 +131,7 @@ class GUI(QtWidgets.QWidget, Ui_Dialog):
         self.thread.start()   
         
     def progressBar(self, msg):
-        """ Receives emitted sring from thread """
+        """ Receives emitted string from thread """
         self.textEdit.setText("Progress: "+msg+"%")
         
     def endCalculation(self):
@@ -168,7 +168,7 @@ class GUI(QtWidgets.QWidget, Ui_Dialog):
        
 
 class powerThread(QtCore.QThread):
-    """ Class for threaded calculation """
+    """ Class for threaded power calculation """
     sig = QtCore.pyqtSignal(str)   # generate a signal for communication
     
     def __init__(self, N, k, dose, params, alpha, seed):
@@ -189,14 +189,14 @@ class powerThread(QtCore.QThread):
         
     def logReg1(self, x1, b0, b1):
         """ Logistic regression with one independent variable:
-            x1: dose [in Gy]
+            x1: dose [e.g., in Gy]
             b0, b1: fit coefficients
         """         
         return 1/(1+np.exp(-b0-b1*x1))
     
     def logReg2(self, x1, x2, b0, b1, b2):
         """ Logistic regression with two independent variables:
-            x1: dose [in Gy]
+            x1: dose [e.g., in Gy]
             x2: group [0 or 1]
             b0, b1, b2: fit coefficients
         """        
@@ -212,7 +212,7 @@ class powerThread(QtCore.QThread):
                 frequency of cell lines (from .xlsx file) 
         alpha: Significance level        
         """     
-        self.sig.emit("Thread beginnt")
+        self.sig.emit("Calculation starting")
         # zero arrays for regression coefficients b0 and b1 and for the TCD50
         #  for arms A and B
         Ab0ar = np.zeros(k)
@@ -299,7 +299,7 @@ class powerThread(QtCore.QThread):
             Y_UM = UMclf.predict_proba(Ccar)[:,1] 
             LLUM = -log_loss(Cear, Y_UM)*len(Y_UM)            
                                                 
-            # rescale fit coefficients to dose scale in Gy
+            # rescale fit coefficients to dose scale in real units (Gy)
             b0 = UMclf.intercept_-UMclf.coef_[:, 0]*Dmin/(Dmax-Dmin)
             b1 = UMclf.coef_[:, 0]/(Dmax-Dmin)
             b2 = UMclf.coef_[:, 1]
@@ -316,7 +316,7 @@ class powerThread(QtCore.QThread):
             # if p-value smaller than significance level: test result positive
             TR[i] = np.int32(p < alpha)
             # compare tcd50 between control and experimental arm.
-            #  if tcd50 of the control arm is sammler than of the experimental
+            #  if tcd50 of the control arm is smaller than of the experimental
             #  arm: set test result to negative (0)
             Atcd50[i] = -Ab0ar[i]/Ab1ar[i]
             Btcd50[i] = -Bb0ar[i]/Bb1ar[i]
@@ -332,7 +332,7 @@ class powerThread(QtCore.QThread):
         Bb1median = np.median(Bb1ar)
         Btcd50median = np.median(Btcd50)
         # calculate median dose modification factor
-        DMF = Atcd50median / Btcd50median
+        DMF = np.median(Atcd50 / Btcd50)
         # calculate power
         power = np.sum(TR)/k               
         # compile a list of results for visualization
@@ -340,19 +340,19 @@ class powerThread(QtCore.QThread):
                         Bb0median, Bb1median,  Btcd50median,
                         DMF, power] 
         # signal end of calculation
-        self.sig.emit("Thread beendet")
+        self.sig.emit("Calculation finished")
 
     def stop(self): 
         """ Can be used to stop the calculation """
         self.runs = False    
-        self.sig.emit("Thread abgebrochen")
+        self.sig.emit("Calculation canceled")
                  
          
 def main():
     """ Start GUI """
     app = QtWidgets.QApplication(sys.argv)
-    Fenster = GUI()    
-    Fenster.show()
+    powdrc = GUI()    
+    powdrc.show()
     sys.exit(app.exec_())
 
 if __name__ == '__main__':

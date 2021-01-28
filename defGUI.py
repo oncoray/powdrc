@@ -4,6 +4,7 @@ Definitions for the GUI
 """
 
 from PyQt5 import QtCore, QtWidgets
+from matplotlibwidgetFile import matplotlibWidget
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -138,4 +139,4 @@ class Ui_Dialog(object):
         self.label.setToolTip(_translate("Dialog", "<html><head/><body><p>Upper line: minimal and maximal dose for plotting </p><p>Lower line: number of grid points for plot</p></body></html>", None))
         self.label.setText(_translate("Dialog", "Plot parameters", None))
 
-from matplotlibwidgetFile import matplotlibWidget
+
