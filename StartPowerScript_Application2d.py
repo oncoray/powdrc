@@ -13,7 +13,7 @@ def main():
     """ Calculate and print power for Application 2 for N=2 to N=40
         with modified dose levels."""
    
-    # read input file for application 1
+    # read input file for application 2
     df = pd.read_excel("Input_Application2.xlsx")            
     params = np.array(df.iloc[:,1:6])
     

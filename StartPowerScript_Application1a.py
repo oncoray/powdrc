@@ -33,8 +33,8 @@ def main():
 
     # print resulting power   
     print("Control arm \t \t \t \t Experimental arm \t \t \t \t DMF \t \t \t \t Power")
-    print("Median beta_0: {0:8.4f} \t \t Median beta_0: {1:8.4f} \t \t Median: {2:8.4f}\t\t{3:7.3f}".format(pT.results[0], pT.results[3], pT.results[6], pT.results[7]))
-    print("Median beta_1: {0:8.4f} \t \t Median beta_1: {1:8.4f}".format(pT.results[1], pT.results[4]))
+    print("Median beta_0: {0:8.4f} \t Median beta_0: {1:8.4f} \t \t Median: {2:8.4f}\t{3:7.3f}".format(pT.results[0], pT.results[3], pT.results[6], pT.results[7]))
+    print("Median beta_1: {0:8.4f} \t Median beta_1: {1:8.4f}".format(pT.results[1], pT.results[4]))
     print("Median TCD50:  {0:5.1f} Gy \t Median TCD50: \t {1:5.1f} Gy".format(pT.results[2], pT.results[5]))             
       
     # sort all simulated doses and events according to control and 

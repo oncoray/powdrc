@@ -13,7 +13,7 @@ def main():
     """ Calculate and print power for Application 2 for N=2 to N=40.
         The expected DMF was changed in two examples."""
    
-    # read input file for example 1
+    # read input file for example 2a
     df = pd.read_excel("Input_Application2a.xlsx")            
     params = np.array(df.iloc[:,1:6])
     
@@ -40,7 +40,7 @@ def main():
         print(pwar)
         
         
-    # read input file for example 2
+    # read input file for example 2b
     df = pd.read_excel("Input_Application2b.xlsx")            
     params = np.array(df.iloc[:,1:6])
     
