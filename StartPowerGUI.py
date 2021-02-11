@@ -33,7 +33,7 @@ class GUI(QtWidgets.QWidget, Ui_Dialog):
         self.dose = [30,40,50,60,72.5,80,100]       # dose lavels
         self.filename = "DEFAULT CASE"              # no file selected
         self.params = np.array([[-7.188,0.115,1.25,1,1]])  # FaDu as default
-        self.seed = 12345                           # initial seed
+        self.seed = 17                           # initial seed
         
         # Set default parameters in line edits
         self.lineEditAlpha.setText("{0:1.2f}".format(self.alpha))
@@ -162,7 +162,7 @@ class GUI(QtWidgets.QWidget, Ui_Dialog):
         self.textEdit.clear()        
         self.textEdit.append("Control arm \t \t \t Experimental arm \t \t DMF \t \t  Power")
         self.textEdit.append("")
-        self.textEdit.append("Median beta_0: {0:7.3f} \t \t Median beta_0: {1:7.3f} \t \t Median: {2:6.2f}\t\t{3:7.3f}".format(self.output[0], self.output[3], self.output[6], self.output[7]))
+        self.textEdit.append("Median beta_0: {0:7.3f} \t \t Median beta_0: {1:7.3f} \t \t Median: {2:7.3f}\t\t{3:7.3f}".format(self.output[0], self.output[3], self.output[6], self.output[7]))
         self.textEdit.append("Median beta_1: {0:7.3f} \t \t Median beta_1: {1:7.3f}".format(self.output[1], self.output[4]))
         self.textEdit.append("Median TCD50:  {0:5.1f} Gy \t \t Median TCD50: \t {1:5.1f} Gy".format(self.output[2], self.output[5]))         
        
@@ -202,7 +202,7 @@ class powerThread(QtCore.QThread):
         """        
         return 1/(1+np.exp(-b0-b1*x1-b2*x2))    
 
-    def simulation(self, N, k, dose, params, alpha, seed):   
+    def simulation(self, N, k, dose, params, alpha, seed, saveInd=False):   
         """ 
         Power calculation function.
         N: Number of animals per dose group in one arm
@@ -252,6 +252,12 @@ class powerThread(QtCore.QThread):
         # set seed
         np.random.seed(seed)
         
+        # if saveInd is True: save all simulated (dose,event,group) pairs
+        if saveInd:
+            saveIndAr = np.zeros((2*Ndose*N*k,3))
+        else:
+            saveIndAr = None
+        
         # Repeat simulation k times
         for i in range(k):
             # emit progress in steps of 5%
@@ -286,6 +292,12 @@ class powerThread(QtCore.QThread):
             Cear = np.concatenate((Aear, Bear), axis=None)           
             # hstack for logistic regression
             Ccar = np.hstack([Cdar, Cgar]) 
+            
+            # if saveInd is True: save all simulated (dose,event,group) pairs
+            if saveInd:
+                saveIndAr[2*Ndose*N*i:2*Ndose*N*(i+1),0] = np.ravel(Cdar) 
+                saveIndAr[2*Ndose*N*i:2*Ndose*N*(i+1),1] = np.ravel(Cear)
+                saveIndAr[2*Ndose*N*i:2*Ndose*N*(i+1),2] = np.ravel(Cgar)
             
             # fit logistic regression with independent parameter dose,
             #  calculate predicted probabilities and log-likelihood
@@ -340,12 +352,13 @@ class powerThread(QtCore.QThread):
                         Bb0median, Bb1median,  Btcd50median,
                         DMF, power] 
         # signal end of calculation
-        self.sig.emit("Calculation finished")
+        self.sig.emit("Calculation finished")        
+        return saveIndAr
 
     def stop(self): 
         """ Can be used to stop the calculation """
         self.runs = False    
-        self.sig.emit("Calculation canceled")
+        self.sig.emit("Calculation aborted")
                  
          
 def main():

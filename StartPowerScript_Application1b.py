@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Example script for Application 2. Reproduces the power curve of Figure 2.
+Example script for Application 1. Reproduces the power curve of Figure 1b.
 """
 
 import numpy as np
@@ -9,19 +9,18 @@ from StartPowerGUI import powerThread
 
         
 def main():
-    """ Calculate and print power for Application 2 (six lung xenografts of 
-        different radiosensitivity) for N=2 to N=40, step size 2."""
+    """ Calculate and print power for Application 1 (FaDu) for N=2 to N=20."""
    
     # read input file for application 1
-    df = pd.read_excel("Input_Application2.xlsx")            
+    df = pd.read_excel("Input_Application1.xlsx")            
     params = np.array(df.iloc[:,1:6])
     
     # define other parameters
-    dose = np.array([0,20,30,40,50,60,70,80,90,100,120])
+    dose = np.array([30,40,50,60,72.5,80,100])
     k = 10000
     alpha = 0.05
-    seed = 12345
-    Nar = np.arange(2, 41, 2)
+    seed = 17
+    Nar = np.arange(2, 21, 1)
         
     print("Please be patient ...")
     print("---------------------")
