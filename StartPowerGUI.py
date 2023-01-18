@@ -102,7 +102,7 @@ class GUI(QtWidgets.QWidget, Ui_Dialog):
         results.        
         """
         # clear plot          
-        self.widgetPlot.canvas.axes.lines = []
+        self.widgetPlot.canvas.axes.clear()
         self.widgetPlot.canvas.draw()        
         
         # read parameters from edits
